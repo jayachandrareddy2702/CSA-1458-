@@ -1,0 +1,40 @@
+%{
+#include <stdio.h>
+#include <string.h>
+
+int count = 0;
+char target_word[100];
+
+%}
+
+%%
+
+[ \t\n]+ { /* Skip whitespace */ }
+
+[a-zA-Z]+ { 
+    if (strcmp(target_word, yytext) == 0)
+        count++;
+}
+
+. ; /* Ignore other characters */
+
+%%
+int yywrap(void){
+return 1;
+}
+
+
+int main(int argc, char* argv[]) {
+    if (argc < 3) {
+        printf("Usage: %s <sentence> <target_word>\n", argv[0]);
+        return 1;
+    }
+
+    strcpy(target_word, argv[2]);
+    yy_scan_string(argv[1]);
+    yylex();
+
+    printf("Frequency of '%s' in the sentence is %d\n", target_word, count);
+
+    return 0;
+}
